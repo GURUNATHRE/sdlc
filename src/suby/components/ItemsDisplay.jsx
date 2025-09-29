@@ -1,21 +1,20 @@
-import React, {useState} from 'react'
-import { itemData } from '../data'
+import React, { useState } from 'react'
+import itemData from '../../suby/data'
 
 const ItemsDisplay = () => {
     const [displayItem, setDisplayItem] = useState(itemData)
 
 
-  return (
+    return (
         <div className="itemSection">
-            {displayItem.map((item)=>{
-                return(
-                    <div className="gallery">
-                        <img src={item.item_img} alt={item.item_img} />
-                    </div>
-                )
-            })}
+            {displayItem.map((item, index) => (
+                <div className="gallery" key={index}>
+                    <img src={item.item_img} alt={item.item_img} />
+                </div>
+            ))}
+
         </div>
-  )
+    )
 }
 
 export default ItemsDisplay

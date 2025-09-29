@@ -1,4 +1,4 @@
-export const itemData = [{
+const itemData = [{
         item_img: "/assets/item/Bonda.jpg"
 
     },
@@ -28,3 +28,5 @@ export const itemData = [{
     },
 
 ]
+
+export default itemData;

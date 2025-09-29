@@ -1,20 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { API_URL } from "../api";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const FirmCollections = () => {
   const [firmData, setFirmData] = useState([]);
-  const [selectedRegion, setSelectedRegion] = useState('All');
-  const [activeCategory, setActiveCategory]= useState('all');
+  const [selectedRegion, setSelectedRegion] = useState("all");
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
+
+  // Fetch all firms
   const firmDataHandler = async () => {
     try {
-      const response = await fetch(`${API_URL}/vendor/all-vendors`);
-      const newFirmData = await response.json();
-      setFirmData(newFirmData.vendors);
+      const response = await fetch(`${API_URL}vendor/allvendors`);
+      if (!response.ok) throw new Error("Failed to fetch firm data");
+      const data = await response.json();
+      const allFirms = data.vendors.flatMap((vendor) => vendor.firm || []);
+      setFirmData(allFirms);
     } catch (error) {
-      alert("firm data not fetched");
-      console.error("firm data not fetched", error);
+      console.error("Firm data not fetched:", error);
+      alert("Firm data not fetched");
     }
   };
 
@@ -23,48 +33,88 @@ const FirmCollections = () => {
   }, []);
 
   const filterHandler = (region, category) => {
-    setSelectedRegion(region);
-    setActiveCategory(category)
+    setSelectedRegion(region.toLowerCase());
+    setActiveCategory(category);
+  };
+
+  const handleFirmClick = (e, id) => {
+    if (!isLoggedIn) {
+      e.preventDefault(); // Stop navigation
+      const confirmLogin = window.confirm(
+        "You must be logged in to view firm details.\nDo you want to login now?"
+      );
+      if (confirmLogin) {
+        navigate("/login");
+      }
+      // else just stay on the same page
+    }
   };
 
   return (
     <>
-      <h3>Restaurants with online food delivery in Hyderabad</h3>
+      <h3>Firms of the Vendor </h3>
+
       <div className="filterButtons">
-        <button onClick={() => filterHandler("All", 'all')} className={activeCategory === 'all' ? 'activeButton': ''}>All</button>
-        <button onClick={() => filterHandler("South-Indian" , 'south-indian')} className={activeCategory === 'south-indian' ? 'activeButton': ''} >South-Indian</button>
-        <button onClick={() => filterHandler("North-Indian", 'north-indian')} className={activeCategory === 'north-indian' ? 'activeButton': ''} >North-Indian</button>
-        <button onClick={() => filterHandler("Chinese", 'chinese')} className={activeCategory === 'chinese' ? 'activeButton': ''} >Chinese</button>
-        <button onClick={() => filterHandler("Bakery", 'bakery')} className={activeCategory === 'bakery' ? 'activeButton': ''} >Bakery</button>
+        {["all", "south-india", "north-india", "chinese", "bakery"].map(
+          (cat) => (
+            <button
+              key={cat}
+              onClick={() => filterHandler(cat, cat)}
+              className={activeCategory === cat ? "activeButton" : ""}
+            >
+              {cat.replace("-", " ").toUpperCase()}
+            </button>
+          )
+        )}
       </div>
+
       <section className="firmSection">
-        {firmData.map((apple) => {
-          return apple.firm.map((item)=>{
-            if(selectedRegion === "All" || 
-              item.region.includes(selectedRegion.toLocaleLowerCase())
-            ){
-                return (
-                  <Link to={`/products/${item._id}/${item.firmName}`} className="link" key={item._id}>
-   <div className="zoomEffect">
-   <div className="firmGroupBox">
-                      <div className="firmGroup">
-                        <img src={`${API_URL}/uploads/${item.image}`} alt={item.firmName} />
-                        <div className="firmOffer">{item.offer}</div>
-                      </div>
-                      <div className="firmDetails">
-                        <strong>{item.firmName}</strong>
-                        <br />
-                        <div className="firmArea">{item.region.join(", ")}</div>
-                        <div className="firmArea">{item.area}</div>
-                      </div>
+        {firmData.length === 0 && <p>No firms found.</p>}
+
+        {firmData
+          .filter(
+            (item) =>
+              selectedRegion === "all" ||
+              (item.region || [])
+                .map((r) => r.toLowerCase())
+                .includes(selectedRegion)
+          )
+          .map((item) => (
+            <Link
+              to={`/product/productbyId/${item._id}`}
+              className="link"
+              key={item._id}
+              onClick={(e) => handleFirmClick(e, item._id)}
+            >
+              <div className="zoomEffect">
+                <div className="firmGroupBox">
+                  <div className="firmGroup">
+                    <img
+                      src={
+                        item.image?.startsWith("http")
+                          ? item.image
+                          : `${API_URL}uploads/${item.image}`
+                      }
+                      alt={item.firmName}
+                      onError={(e) => {
+                        e.target.src =
+                          "https://via.placeholder.com/200x150?text=No+Image";
+                      }}
+                    />
+                    <div className="firmOffer">{item.offer}</div>
+                  </div>
+                  <div className="firmDetails">
+                    <strong>{item.firmName}</strong>
+                    <br />
+                    <div className="firmArea">
+                      {(item.region || []).join(", ")}
                     </div>
-   </div>
-                  </Link>
-                );
-            }
-            return null;
-          });
-        })}
+                    <div className="firmArea">{item.area}</div>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))}
       </section>
     </>
   );
