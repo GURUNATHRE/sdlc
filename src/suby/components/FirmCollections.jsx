@@ -9,6 +9,7 @@ const FirmCollections = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
+  // Check login
   useEffect(() => {
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
@@ -43,16 +44,13 @@ const FirmCollections = () => {
       const confirmLogin = window.confirm(
         "You must be logged in to view firm details.\nDo you want to login now?"
       );
-      if (confirmLogin) {
-        navigate("/login");
-      }
-      // else just stay on the same page
+      if (confirmLogin) navigate("/login");
     }
   };
 
   return (
     <>
-      <h3>Firms of the Vendor </h3>
+      <h3>Firms of the Vendor</h3>
 
       <div className="filterButtons">
         {["all", "south-india", "north-india", "chinese", "bakery"].map(
@@ -81,7 +79,7 @@ const FirmCollections = () => {
           )
           .map((item) => (
             <Link
-              to={`/product/productbyId/${item._id}`}
+              to={`/product/byfirm/${item._id}`} // ✅ corrected route
               className="link"
               key={item._id}
               onClick={(e) => handleFirmClick(e, item._id)}

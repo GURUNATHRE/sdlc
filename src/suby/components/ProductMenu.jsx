@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { API_URL } from "../api";
 import { MagnifyingGlass } from "react-loader-spinner";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../styles/ProductMenu.css"
+import "../styles/ProductMenu.css";
+
 const ProductMenu = () => {
   const { firmId } = useParams();
   const [products, setProducts] = useState([]);
@@ -11,13 +12,13 @@ const ProductMenu = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Fetch products from backend
+  // Fetch products from backend (correct endpoint)
   const fetchProducts = async () => {
     try {
-      const response = await fetch(`${API_URL}product/productbyId/${firmId}`);
+      const response = await fetch(`${API_URL}product/byfirm/${firmId}`);
       if (!response.ok) throw new Error("Failed to fetch products");
       const data = await response.json();
-      const productList = data.products || data || [];
+      const productList = data.products || [];
       setProducts(productList);
       setFilteredProducts(productList);
     } catch (error) {
@@ -35,10 +36,11 @@ const ProductMenu = () => {
   // Filter products based on search query
   useEffect(() => {
     const query = localStorage.getItem("searchQuery")?.toLowerCase() || "";
-    const filtered = products.filter(product =>
-      product.productName.toLowerCase().includes(query)
+    setFilteredProducts(
+      products.filter((product) =>
+        product.productName.toLowerCase().includes(query)
+      )
     );
-    setFilteredProducts(filtered);
   }, [products]);
 
   if (loading) {
@@ -59,11 +61,11 @@ const ProductMenu = () => {
 
   return (
     <div className="container mt-4">
-      {/* Add Product button at top-right */}
+      {/* Add Product button */}
       <div className="d-flex justify-content-end mb-3">
         <button
           className="btn btn-warning btn-md"
-          onClick={() => navigate(`/product/addProduct/${firmId}`)}
+          onClick={() => navigate(`/product/add/${firmId}`)} // updated to match backend
         >
           ➕ Add Product
         </button>
@@ -84,6 +86,7 @@ const ProductMenu = () => {
                   }
                   className="card-img-top"
                   alt={product.productName}
+                  style={{ objectFit: "cover", height: "200px" }}
                 />
                 <div className="card-body">
                   <h5 className="card-title">{product.productName}</h5>
