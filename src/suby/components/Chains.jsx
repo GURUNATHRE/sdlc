@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { API_URL } from "../api";
 import { MagnifyingGlass } from "react-loader-spinner";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Chains = () => {
@@ -35,6 +35,16 @@ const Chains = () => {
     navigate("/firm/add-firm");
   };
 
+  const handleFirmClick = (id) => {
+    const token = localStorage.getItem("token"); // check vendor login
+    if (!token) {
+      alert("Please login first to view products.");
+      navigate("/vendor/login"); // redirect to login page
+      return;
+    }
+    navigate(`/product/productbyId/${id}`);
+  };
+
   return (
     <div className="container my-4">
       {/* Loader */}
@@ -54,10 +64,7 @@ const Chains = () => {
 
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h3 className="mb-0">Best Firms of the Vendor</h3>
-        <button
-          onClick={handleAddFirm}
-          className="btn btn-primary btn-sm"
-        >
+        <button onClick={handleAddFirm} className="btn btn-primary btn-sm">
           ➕ Add Firm
         </button>
       </div>
@@ -70,29 +77,25 @@ const Chains = () => {
 
         {firms.map((item) => (
           <div className="col-md-3 col-sm-6 mb-4" key={item._id}>
-            <Link
-              to={`/product/productbyId/${item._id}`}
-              className="text-decoration-none"
+            <div
+              onClick={() => handleFirmClick(item._id)}
+              className="card shadow-sm h-100"
+              style={{ cursor: "pointer" }}
             >
-              <div className="card shadow-sm h-100">
-                <img
-                  src={
-                    item.image
-                      ? `${API_URL}uploads/${item.image}`
-                      : "https://via.placeholder.com/150?text=No+Image"
-                  }
-                  alt={item.firmName}
-                  className="card-img-top"
-                  style={{
-                    height: "150px",
-                    objectFit: "cover",
-                  }}
-                />
-                <div className="card-body text-center">
-                  <h6 className="card-title mb-0">{item.firmName}</h6>
-                </div>
+              <img
+                src={
+                  item.image
+                    ? `${API_URL}uploads/${item.image}`
+                    : "https://via.placeholder.com/150?text=No+Image"
+                }
+                alt={item.firmName}
+                className="card-img-top"
+                style={{ height: "150px", objectFit: "cover" }}
+              />
+              <div className="card-body text-center">
+                <h6 className="card-title mb-0">{item.firmName}</h6>
               </div>
-            </Link>
+            </div>
           </div>
         ))}
       </div>
