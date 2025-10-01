@@ -96,7 +96,7 @@ const FirmCollections = () => {
               <div className="zoomEffect">
                 <div className="firmGroupBox">
                   <div className="firmGroup">
-                    <img
+                    {/* <img
                       src={
                         item.image?.startsWith("http")
                           ? item.image
@@ -107,7 +107,7 @@ const FirmCollections = () => {
                         e.target.src =
                           "https://via.placeholder.com/200x150?text=No+Image";
                       }}
-                    />
+                    /> */}
                     <div className="firmOffer">{item.offer}</div>
                   </div>
                   <div className="firmDetails">

@@ -18,11 +18,12 @@ const App = () => {
       <div className="container py-4">
         <Routes>
           <Route path="/" element={<LandingPage />} />
+
           <Route path="/product/byfirm/:firmId" element={<ProductMenu />} />
           <Route path="/product/add/:firmId" element={<AddProduct />} />
           <Route path="/vendor/login" element={<Login />} />
           <Route path="/vendor/register" element={<Register />} />
-          <Route path="/firm/add-firm" element={<AddFirm />} /> 
+          <Route path="/firm/add-firm/:vendorId" element={<AddFirm />} /> 
         </Routes>
       </div>
     </AuthProvider>

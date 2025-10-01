@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import { API_URL } from "../api";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [loginData, setLoginData] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
       const res = await fetch(`${API_URL}vendor/login`, {
         method: "POST",
@@ -15,19 +18,31 @@ const Login = () => {
         body: JSON.stringify(loginData),
       });
 
+      // Check network response
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "Login failed");
+      }
+
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.message || "Login failed");
-
-      // ✅ Store token and vendor ID in localStorage
+      // Store token and vendor ID
       localStorage.setItem("token", data.token);
       localStorage.setItem("vendorId", data.vendor._id);
 
       alert("Login successful ✅");
       navigate("/"); // redirect to home/dashboard
     } catch (err) {
+      if (err.message === "Failed to fetch") {
+        alert(
+          "Unable to connect to the server. Please check if your backend is running at the correct URL."
+        );
+      } else {
+        alert(err.message);
+      }
       console.error("Login error:", err);
-      alert(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -38,17 +53,16 @@ const Login = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        background: "linear-gradient(135deg, #ed563bff, #ff9a9eff)",
-        fontFamily: "Arial, sans-serif",
+        background: "linear-gradient(135deg, #ed563bff)",
       }}
     >
       <form
         onSubmit={handleLogin}
         style={{
           backgroundColor: "white",
-          padding: "40px 30px",
-          borderRadius: "15px",
-          boxShadow: "0 6px 25px rgba(0,0,0,0.2)",
+          padding: "40px",
+          borderRadius: "12px",
+          boxShadow: "0px 4px 20px rgba(0,0,0,0.2)",
           display: "flex",
           flexDirection: "column",
           width: "320px",
@@ -96,32 +110,29 @@ const Login = () => {
 
         <button
           type="submit"
+          disabled={loading}
           style={{
             backgroundColor: "#ba776bff",
             color: "white",
             padding: "12px",
             border: "none",
             borderRadius: "8px",
-            cursor: "pointer",
+            cursor: loading ? "not-allowed" : "pointer",
             fontSize: "16px",
             fontWeight: "bold",
             transition: "0.3s",
-            marginBottom: "15px",
           }}
           onMouseOver={(e) => (e.target.style.backgroundColor = "#ee661dff")}
           onMouseOut={(e) => (e.target.style.backgroundColor = "#ba776bff")}
         >
-          Login
+          {loading ? "Logging in..." : "Login"}
         </button>
 
-        <p style={{ textAlign: "center", fontSize: "14px" }}>
+        <p style={{ marginTop: "12px", fontSize: "14px", textAlign: "center" }}>
           Don't have an account?{" "}
-          <Link
-            to="/vendor/register"
-            style={{ color: "#ed563bff", fontWeight: "bold" }}
-          >
-            Sign Up
-          </Link>
+          <a href="/vendor/register" style={{ color: "#ed563bff" }}>
+            Register
+          </a>
         </p>
       </form>
     </div>

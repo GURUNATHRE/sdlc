@@ -10,11 +10,12 @@ const Chains = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  // Get vendorId from localStorage
+  const vendorId = localStorage.getItem("vendorId");
+
   const fetchVendorFirms = async () => {
     try {
-      const token = localStorage.getItem("token"); // JWT token
-      const vendorId = localStorage.getItem("vendorId"); // Vendor ID
-
+      const token = localStorage.getItem("token");
       if (!token || !vendorId) throw new Error("You are not authenticated");
 
       const response = await fetch(`${API_URL}vendor/oneVendor/${vendorId}`, {
@@ -41,7 +42,11 @@ const Chains = () => {
   }, []);
 
   const handleAddFirm = () => {
-    navigate("/firm/add-firm");
+    if (!vendorId) {
+      alert("⚠️ Vendor ID not found. Please login again.");
+      return;
+    }
+    navigate(`/firm/add-firm/${vendorId}`); // ✅ pass vendorId to AddFirm route
   };
 
   const handleFirmClick = (firmId) => {
@@ -85,13 +90,13 @@ const Chains = () => {
               onClick={() => handleFirmClick(item._id)}
               style={{ cursor: "pointer" }}
             >
-              <img
-                src={item.image ? `${API_URL}uploads/${item.image}` : "../"}
+              {/* <img
+                src={item.image ? `${API_URL}uploads/${item.image}` : "/fallback.jpg"}
                 alt={item.firmName}
                 className="card-img-top"
                 style={{ height: "150px", objectFit: "cover" }}
-                onError={(e) => (e.target.src = "../")}
-              />
+                onError={(e) => (e.target.src = "/fallback.jpg")}
+              /> */}
               <div className="card-body text-center">
                 <h6 className="card-title mb-0">{item.firmName}</h6>
               </div>

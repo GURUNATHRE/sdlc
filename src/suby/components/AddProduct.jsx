@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { API_URL } from "../api";
 
 const AddProduct = () => {
-  const { firmId } = useParams();
+  const { firmId } = useParams(); // get firmId from URL
   const navigate = useNavigate();
 
   const [productName, setProductName] = useState("");
@@ -30,14 +30,12 @@ const AddProduct = () => {
     formData.append("bestseller", bestseller);
     formData.append("description", description);
     if (image) formData.append("image", image);
-// product/add/68da2d9c44c83f90d59267e3
+
     try {
       setLoading(true);
       const res = await fetch(`${API_URL}product/add/${firmId}`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
 
@@ -49,6 +47,15 @@ const AddProduct = () => {
       }
 
       alert("✅ Product added successfully!");
+      // Reset form
+      setProductName("");
+      setProductPrice("");
+      setCategory("veg");
+      setDescription("");
+      setBestseller(false);
+      setImage(null);
+
+      // Redirect to product list for the same firm
       navigate(`/product/byfirm/${firmId}`);
     } catch (err) {
       console.error("Error adding product:", err);
@@ -61,7 +68,6 @@ const AddProduct = () => {
   return (
     <div className="container mt-4">
       <h2 className="mb-4">Add Product</h2>
-
       <form onSubmit={handleSubmit} encType="multipart/form-data">
         <div className="mb-3">
           <label className="form-label">Product Name</label>
@@ -94,8 +100,6 @@ const AddProduct = () => {
           >
             <option value="veg">Veg</option>
             <option value="non-veg">Non-Veg</option>
-            {/* <option value="chinese">Chinese</option>
-            <option value="bakery">Bakery</option> */}
           </select>
         </div>
 

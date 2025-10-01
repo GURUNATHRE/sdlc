@@ -19,6 +19,7 @@ const AddFirm = () => {
     e.preventDefault();
 
     const token = localStorage.getItem("token");
+    const vendorId  = localStorage.getItem("vendorId");
     if (!token) {
       alert("⚠️ Please login first!");
       return;
@@ -33,7 +34,7 @@ const AddFirm = () => {
     if (image) formData.append("image", image);
 
     try {
-      const response = await fetch(`${API_URL}firm/add-firm`, {
+      const response = await fetch(`${API_URL}firm/add-firm/${vendorId}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`, // ✅ matches verifyToken middleware

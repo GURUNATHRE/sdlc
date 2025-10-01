@@ -6,7 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/ProductMenu.css";
 
 const ProductMenu = () => {
-  const { firmId } = useParams();
+  const { firmId } = useParams(); // get firmId from URL
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -45,9 +45,7 @@ const ProductMenu = () => {
     try {
       const res = await fetch(`${API_URL}product/delete/${productId}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
 
