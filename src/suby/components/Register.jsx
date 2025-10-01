@@ -8,30 +8,11 @@ const Register = () => {
     email: "",
     password: "",
   });
-  const [errors, setErrors] = useState({});
+
   const navigate = useNavigate();
-
-  // Regex patterns
-  const nameRegex = /^[a-zA-Z\s]{2,30}$/; // Letters and spaces, 2-30 chars
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic email pattern
-  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; // Min 8 chars, 1 letter + 1 number
-
-  const handleValidation = () => {
-    let tempErrors = {};
-    if (!nameRegex.test(signupData.username)) tempErrors.username = "Invalid name";
-    if (!emailRegex.test(signupData.email)) tempErrors.email = "Invalid email";
-    if (!passwordRegex.test(signupData.password))
-      tempErrors.password =
-        "Password must be 8+ chars, include letters and numbers";
-    setErrors(tempErrors);
-    return Object.keys(tempErrors).length === 0;
-  };
 
   const handleSignup = async (e) => {
     e.preventDefault();
-
-    if (!handleValidation()) return; // stop if validation fails
-
     try {
       const res = await fetch(`${API_URL}/vendor/register`, {
         method: "POST",
@@ -40,11 +21,14 @@ const Register = () => {
       });
 
       const data = await res.json();
+      console.log("Backend response:", data);
+
       if (!res.ok) throw new Error(data.message || "Signup failed");
 
       alert("Signup successful ✅, please login");
-      navigate("/login");
+      navigate("/vendor/login");
     } catch (err) {
+      console.error("Signup error:", err);
       alert(err.message);
     }
   };
@@ -52,115 +36,82 @@ const Register = () => {
   return (
     <div
       style={{
-        height: "100vh",
+        minHeight: "100vh",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        background: "linear-gradient(120deg, #ff9a9e, #fad0c4)",
-        fontFamily: "Arial, sans-serif",
+        background: "linear-gradient(135deg, #ff9a9e, #fad0c4)",
+        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        padding: "20px",
       }}
     >
       <form
         onSubmit={handleSignup}
         style={{
           backgroundColor: "#fff",
-          padding: "40px 30px",
-          borderRadius: "15px",
-          boxShadow: "0 6px 25px rgba(0,0,0,0.2)",
+          padding: "50px 40px",
+          borderRadius: "20px",
+          boxShadow: "0 15px 40px rgba(0,0,0,0.2)",
           display: "flex",
           flexDirection: "column",
-          width: "350px",
+          width: "100%",
+          maxWidth: "400px",
+          transition: "all 0.3s ease-in-out",
         }}
       >
         <h2
           style={{
             textAlign: "center",
-            marginBottom: "25px",
-            color: "#333",
+            marginBottom: "30px",
+            color: "#ff4d4f",
+            fontWeight: "bold",
           }}
         >
-          Create an Account 🤗
+          Create Your Account
         </h2>
 
-        <label style={{ marginBottom: "8px", fontWeight: "bold", color: "#444" }}>
-          Name
-        </label>
-        <input
-          type="text"
-          placeholder="Enter your name"
-          value={signupData.username}
-          onChange={(e) =>
-            setSignupData({ ...signupData, username: e.target.value })
-          }
-          required
-          style={{
-            marginBottom: "5px",
-            padding: "12px",
-            borderRadius: "8px",
-            border: "1px solid #bbb",
-            fontSize: "14px",
-          }}
-        />
-        {errors.username && (
-          <span style={{ color: "red", marginBottom: "10px" }}>{errors.username}</span>
-        )}
-
-        <label style={{ marginBottom: "8px", fontWeight: "bold", color: "#444" }}>
-          Email
-        </label>
-        <input
-          type="email"
-          placeholder="Enter your email"
-          value={signupData.email}
-          onChange={(e) =>
-            setSignupData({ ...signupData, email: e.target.value })
-          }
-          required
-          style={{
-            marginBottom: "5px",
-            padding: "12px",
-            borderRadius: "8px",
-            border: "1px solid #bbb",
-            fontSize: "14px",
-          }}
-        />
-        {errors.email && (
-          <span style={{ color: "red", marginBottom: "10px" }}>{errors.email}</span>
-        )}
-
-        <label style={{ marginBottom: "8px", fontWeight: "bold", color: "#444" }}>
-          Password
-        </label>
-        <input
-          type="password"
-          placeholder="Enter your password"
-          value={signupData.password}
-          onChange={(e) =>
-            setSignupData({ ...signupData, password: e.target.value })
-          }
-          required
-          style={{
-            marginBottom: "5px",
-            padding: "12px",
-            borderRadius: "8px",
-            border: "1px solid #bbb",
-            fontSize: "14px",
-          }}
-        />
-        {errors.password && (
-          <span style={{ color: "red", marginBottom: "15px" }}>
-            {errors.password}
-          </span>
-        )}
+        {["Name", "Email", "Password"].map((label, index) => (
+          <div key={index} style={{ marginBottom: "20px", display: "flex", flexDirection: "column" }}>
+            <label style={{ marginBottom: "8px", fontWeight: "600", color: "#555" }}>{label}</label>
+            <input
+              type={label === "Password" ? "password" : "text"}
+              placeholder={`Enter your ${label.toLowerCase()}`}
+              value={
+                label === "Name"
+                  ? signupData.username
+                  : label === "Email"
+                  ? signupData.email
+                  : signupData.password
+              }
+              onChange={(e) =>
+                setSignupData({
+                  ...signupData,
+                  [label === "Name" ? "username" : label.toLowerCase()]: e.target.value,
+                })
+              }
+              required
+              style={{
+                padding: "12px",
+                borderRadius: "10px",
+                border: "1px solid #ccc",
+                fontSize: "14px",
+                outline: "none",
+                transition: "0.2s",
+              }}
+              onFocus={(e) => (e.target.style.borderColor = "#ff4d4f")}
+              onBlur={(e) => (e.target.style.borderColor = "#ccc")}
+            />
+          </div>
+        ))}
 
         <button
           type="submit"
           style={{
             background: "linear-gradient(90deg, #ff758c, #ff7eb3)",
-            color: "white",
-            padding: "12px",
+            color: "#fff",
+            padding: "14px",
             border: "none",
-            borderRadius: "8px",
+            borderRadius: "12px",
             cursor: "pointer",
             fontSize: "16px",
             fontWeight: "bold",
@@ -173,8 +124,18 @@ const Register = () => {
             (e.target.style.background = "linear-gradient(90deg, #ff758c, #ff7eb3)")
           }
         >
-          Sign UP
+          Sign Up
         </button>
+
+        <p style={{ textAlign: "center", marginTop: "20px", color: "#888", fontSize: "14px" }}>
+          Already have an account?{" "}
+          <span
+            style={{ color: "#ff4d4f", cursor: "pointer", fontWeight: "bold" }}
+            onClick={() => navigate("/vendor/login")}
+          >
+            Login
+          </span>
+        </p>
       </form>
     </div>
   );

@@ -16,14 +16,17 @@ const Login = () => {
       });
 
       const data = await res.json();
+
       if (!res.ok) throw new Error(data.message || "Login failed");
 
-      // Save token permanently until logout
+      // ✅ Store token and vendor ID in localStorage
       localStorage.setItem("token", data.token);
+      localStorage.setItem("vendorId", data.vendor._id); // assuming response has vendor._id
 
       alert("Login successful ✅");
-      navigate("/");
+      navigate("/"); // redirect to home or dashboard
     } catch (err) {
+      console.error("Login error:", err);
       alert(err.message);
     }
   };

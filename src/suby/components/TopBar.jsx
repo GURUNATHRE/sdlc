@@ -84,10 +84,10 @@ const TopBar = () => {
             <div className="col-lg-3 d-flex justify-content-end align-items-center">
               {!isLoggedIn ? (
                 <>
-                  <Link className="btn btn-outline-primary me-2" to="/login">
+                  <Link className="btn btn-outline-primary me-2" to="/vendor/login">
                     Login
                   </Link>
-                  <Link className="btn btn-primary" to="/register">
+                  <Link className="btn btn-primary" to="/vendor/register">
                     Sign Up
                   </Link>
                 </>

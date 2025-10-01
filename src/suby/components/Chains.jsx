@@ -10,24 +10,34 @@ const Chains = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const fetchAllFirms = async () => {
+  const fetchVendorFirms = async () => {
     try {
-      const response = await fetch(`${API_URL}/vendor/allvendors`);
-      if (!response.ok) throw new Error("Network response not ok");
+      const token = localStorage.getItem("token"); // JWT token
+      const vendorId = localStorage.getItem("vendorId"); // Vendor ID
+
+      if (!token || !vendorId) throw new Error("You are not authenticated");
+
+      const response = await fetch(`${API_URL}/vendor/oneVendor/${vendorId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch vendor data");
 
       const data = await response.json();
-      const allFirms = data.vendors.flatMap((vendor) => vendor.firm || []);
-      setFirms(allFirms);
+      setFirms(data.vendor?.firm || []);
     } catch (err) {
-      console.error("Failed to fetch firms:", err);
-      setError("Failed to fetch firms. Try again later.");
+      console.error("Error fetching vendor firms:", err);
+      setError(err.message || "Failed to fetch firms");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchAllFirms();
+    fetchVendorFirms();
   }, []);
 
   const handleAddFirm = () => {
@@ -50,14 +60,14 @@ const Chains = () => {
             glassColor="#c0efff"
             color="#e15b64"
           />
-          <p>Loading firms...</p>
+          <p>Loading your firms...</p>
         </div>
       )}
 
       {error && <p className="text-danger">{error}</p>}
 
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h3 className="mb-0">Best Firms of the Vendor</h3>
+        <h3 className="mb-0">Your Firms</h3>
         <button onClick={handleAddFirm} className="btn btn-primary btn-sm">
           ➕ Add Firm
         </button>
@@ -76,11 +86,7 @@ const Chains = () => {
               style={{ cursor: "pointer" }}
             >
               <img
-                src={
-                  item.image
-                    ? `${API_URL}/uploads/${item.image}`
-                    : "../"
-                }
+                src={item.image ? `${API_URL}/uploads/${item.image}` : "../"}
                 alt={item.firmName}
                 className="card-img-top"
                 style={{ height: "150px", objectFit: "cover" }}

@@ -15,14 +15,25 @@ const FirmCollections = () => {
     setIsLoggedIn(!!token);
   }, []);
 
-  // Fetch all firms
+  // Fetch firms of the logged-in vendor
   const firmDataHandler = async () => {
     try {
-      const response = await fetch(`${API_URL}/vendor/allvendors`);
+      const token = localStorage.getItem("token");
+      const vendorId = localStorage.getItem("vendorId");
+
+      if (!token || !vendorId) throw new Error("You are not authenticated");
+
+      const response = await fetch(`${API_URL}/vendor/oneVendor/${vendorId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       if (!response.ok) throw new Error("Failed to fetch firm data");
+
       const data = await response.json();
-      const allFirms = data.vendors.flatMap((vendor) => vendor.firm || []);
-      setFirmData(allFirms);
+      setFirmData(data.vendor?.firm || []);
     } catch (error) {
       console.error("Firm data not fetched:", error);
       alert("Firm data not fetched");
@@ -40,7 +51,7 @@ const FirmCollections = () => {
 
   const handleFirmClick = (e, id) => {
     if (!isLoggedIn) {
-      e.preventDefault(); // Stop navigation
+      e.preventDefault();
       const confirmLogin = window.confirm(
         "You must be logged in to view firm details.\nDo you want to login now?"
       );
@@ -50,7 +61,7 @@ const FirmCollections = () => {
 
   return (
     <>
-      <h3>Firms of the Vendor</h3>
+      <h3>Your Firms  based on region</h3>
 
       <div className="filterButtons">
         {["all", "south-india", "north-india", "chinese", "bakery"].map(
@@ -73,13 +84,11 @@ const FirmCollections = () => {
           .filter(
             (item) =>
               selectedRegion === "all" ||
-              (item.region || [])
-                .map((r) => r.toLowerCase())
-                .includes(selectedRegion)
+              (item.region || []).map((r) => r.toLowerCase()).includes(selectedRegion)
           )
           .map((item) => (
             <Link
-              to={`/product/byfirm/${item._id}`} // ✅ corrected route
+              to={`/product/byfirm/${item._id}`}
               className="link"
               key={item._id}
               onClick={(e) => handleFirmClick(e, item._id)}
@@ -91,7 +100,7 @@ const FirmCollections = () => {
                       src={
                         item.image?.startsWith("http")
                           ? item.image
-                          : `${API_URL}uploads/${item.image}`
+                          : `${API_URL}/uploads/${item.image}`
                       }
                       alt={item.firmName}
                       onError={(e) => {
@@ -104,9 +113,7 @@ const FirmCollections = () => {
                   <div className="firmDetails">
                     <strong>{item.firmName}</strong>
                     <br />
-                    <div className="firmArea">
-                      {(item.region || []).join(", ")}
-                    </div>
+                    <div className="firmArea">{(item.region || []).join(", ")}</div>
                     <div className="firmArea">{item.area}</div>
                   </div>
                 </div>
