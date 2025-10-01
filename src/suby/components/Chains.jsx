@@ -17,7 +17,7 @@ const Chains = () => {
 
       if (!token || !vendorId) throw new Error("You are not authenticated");
 
-      const response = await fetch(`${API_URL}/vendor/oneVendor/${vendorId}`, {
+      const response = await fetch(`${API_URL}vendor/oneVendor/${vendorId}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -86,7 +86,7 @@ const Chains = () => {
               style={{ cursor: "pointer" }}
             >
               <img
-                src={item.image ? `${API_URL}/uploads/${item.image}` : "../"}
+                src={item.image ? `${API_URL}uploads/${item.image}` : "../"}
                 alt={item.firmName}
                 className="card-img-top"
                 style={{ height: "150px", objectFit: "cover" }}

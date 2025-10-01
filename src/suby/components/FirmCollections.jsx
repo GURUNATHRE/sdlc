@@ -23,7 +23,7 @@ const FirmCollections = () => {
 
       if (!token || !vendorId) throw new Error("You are not authenticated");
 
-      const response = await fetch(`${API_URL}/vendor/oneVendor/${vendorId}`, {
+      const response = await fetch(`${API_URL}vendor/oneVendor/${vendorId}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -100,7 +100,7 @@ const FirmCollections = () => {
                       src={
                         item.image?.startsWith("http")
                           ? item.image
-                          : `${API_URL}/uploads/${item.image}`
+                          : `${API_URL}uploads/${item.image}`
                       }
                       alt={item.firmName}
                       onError={(e) => {

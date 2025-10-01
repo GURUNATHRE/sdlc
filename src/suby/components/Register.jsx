@@ -14,7 +14,7 @@ const Register = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${API_URL}/vendor/register`, {
+      const res = await fetch(`${API_URL}vendor/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(signupData),

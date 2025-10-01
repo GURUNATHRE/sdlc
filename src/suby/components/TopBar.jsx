@@ -17,8 +17,11 @@ const TopBar = () => {
     if (window.confirm("Are you sure you want to logout?")) {
       localStorage.removeItem("token");
       localStorage.removeItem("role");
+      localStorage.removeItem("vendorId"); // ✅ clear vendorId as well
       setIsLoggedIn(false);
-      navigate("/");
+
+      // ✅ Redirect to login page immediately
+      navigate("/vendor/login", { replace: true });
     }
   };
 
@@ -84,7 +87,10 @@ const TopBar = () => {
             <div className="col-lg-3 d-flex justify-content-end align-items-center">
               {!isLoggedIn ? (
                 <>
-                  <Link className="btn btn-outline-primary me-2" to="/vendor/login">
+                  <Link
+                    className="btn btn-outline-primary me-2"
+                    to="/vendor/login"
+                  >
                     Login
                   </Link>
                   <Link className="btn btn-primary" to="/vendor/register">
@@ -92,11 +98,8 @@ const TopBar = () => {
                   </Link>
                 </>
               ) : (
-                <button
-                  className="btn btn-danger"
-                  onClick={handleLogout}
-                >
-                   Logout
+                <button className="btn btn-danger" onClick={handleLogout}>
+                  Logout
                 </button>
               )}
             </div>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { API_URL } from "../api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Login = () => {
   const [loginData, setLoginData] = useState({ email: "", password: "" });
@@ -9,7 +9,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${API_URL}/vendor/login`, {
+      const res = await fetch(`${API_URL}vendor/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
@@ -21,10 +21,10 @@ const Login = () => {
 
       // ✅ Store token and vendor ID in localStorage
       localStorage.setItem("token", data.token);
-      localStorage.setItem("vendorId", data.vendor._id); // assuming response has vendor._id
+      localStorage.setItem("vendorId", data.vendor._id);
 
       alert("Login successful ✅");
-      navigate("/"); // redirect to home or dashboard
+      navigate("/"); // redirect to home/dashboard
     } catch (err) {
       console.error("Login error:", err);
       alert(err.message);
@@ -38,22 +38,25 @@ const Login = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        background: "linear-gradient(135deg, #ed563bff)",
+        background: "linear-gradient(135deg, #ed563bff, #ff9a9eff)",
+        fontFamily: "Arial, sans-serif",
       }}
     >
       <form
         onSubmit={handleLogin}
         style={{
           backgroundColor: "white",
-          padding: "40px",
-          borderRadius: "12px",
-          boxShadow: "0px 4px 20px rgba(0,0,0,0.2)",
+          padding: "40px 30px",
+          borderRadius: "15px",
+          boxShadow: "0 6px 25px rgba(0,0,0,0.2)",
           display: "flex",
           flexDirection: "column",
           width: "320px",
         }}
       >
-        <h2 style={{ textAlign: "center", marginBottom: "20px", color: "#333" }}>
+        <h2
+          style={{ textAlign: "center", marginBottom: "20px", color: "#333" }}
+        >
           Login
         </h2>
 
@@ -61,7 +64,9 @@ const Login = () => {
           type="email"
           placeholder="Email"
           value={loginData.email}
-          onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+          onChange={(e) =>
+            setLoginData({ ...loginData, email: e.target.value })
+          }
           required
           style={{
             marginBottom: "15px",
@@ -76,7 +81,9 @@ const Login = () => {
           type="password"
           placeholder="Password"
           value={loginData.password}
-          onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+          onChange={(e) =>
+            setLoginData({ ...loginData, password: e.target.value })
+          }
           required
           style={{
             marginBottom: "20px",
@@ -99,12 +106,23 @@ const Login = () => {
             fontSize: "16px",
             fontWeight: "bold",
             transition: "0.3s",
+            marginBottom: "15px",
           }}
           onMouseOver={(e) => (e.target.style.backgroundColor = "#ee661dff")}
           onMouseOut={(e) => (e.target.style.backgroundColor = "#ba776bff")}
         >
           Login
         </button>
+
+        <p style={{ textAlign: "center", fontSize: "14px" }}>
+          Don't have an account?{" "}
+          <Link
+            to="/vendor/register"
+            style={{ color: "#ed563bff", fontWeight: "bold" }}
+          >
+            Sign Up
+          </Link>
+        </p>
       </form>
     </div>
   );
