@@ -12,6 +12,7 @@ const AddProduct = () => {
   const [description, setDescription] = useState("");
   const [bestseller, setBestseller] = useState(false);
   const [image, setImage] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,42 +30,37 @@ const AddProduct = () => {
     formData.append("bestseller", bestseller);
     formData.append("description", description);
     if (image) formData.append("image", image);
-
+// product/add/68da2d9c44c83f90d59267e3
     try {
-      const response = await fetch(`${API_URL}product/addProduct/${firmId}`, {
+      setLoading(true);
+      const res = await fetch(`${API_URL}product/add/${firmId}`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`, 
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
 
-      const text = await response.text();
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch {
-        console.error("❌ Server returned invalid response:", text);
-        alert("❌ Server error. Check console.");
-        return;
-      }
+      const data = await res.json();
 
-      if (!response.ok) {
+      if (!res.ok) {
         alert(`❌ Error: ${data.error || "Something went wrong"}`);
         return;
       }
 
       alert("✅ Product added successfully!");
-      navigate(`/product/productbyId/${firmId}`); // Redirect to product list
-    } catch (error) {
-      console.error("Error adding product:", error);
-      alert("❌ Could not add product, please try again.");
+      navigate(`/product/byfirm/${firmId}`);
+    } catch (err) {
+      console.error("Error adding product:", err);
+      alert("❌ Could not add product. Try again later.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="container mt-4">
-      <h2 className="mb-4"> Add Product</h2>
+      <h2 className="mb-4">Add Product</h2>
 
       <form onSubmit={handleSubmit} encType="multipart/form-data">
         <div className="mb-3">
@@ -98,8 +94,8 @@ const AddProduct = () => {
           >
             <option value="veg">Veg</option>
             <option value="non-veg">Non-Veg</option>
-            <option value="chinese">Chinese</option>
-            <option value="bakery">Bakery</option>
+            {/* <option value="chinese">Chinese</option>
+            <option value="bakery">Bakery</option> */}
           </select>
         </div>
 
@@ -136,8 +132,12 @@ const AddProduct = () => {
           />
         </div>
 
-        <button type="submit" className="btn btn-success w-100">
-          Add Product
+        <button
+          type="submit"
+          className="btn btn-success w-100"
+          disabled={loading}
+        >
+          {loading ? "Adding..." : "Add Product"}
         </button>
       </form>
     </div>

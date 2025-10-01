@@ -18,8 +18,8 @@ const App = () => {
       <div className="container py-4">
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/product/productbyId/:firmId" element={<ProductMenu />} />
-          <Route path="/product/addProduct/:firmId" element={<AddProduct />} />
+          <Route path="/product/byfirm/:firmId" element={<ProductMenu />} />
+          <Route path="/product/add/:firmId" element={<AddProduct />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/firm/add-firm" element={<AddFirm />} /> 

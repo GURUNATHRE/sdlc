@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { API_URL } from "../api";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
- // install with: npm install jwt-decode
 
 const Login = () => {
   const [loginData, setLoginData] = useState({ email: "", password: "" });
@@ -20,28 +18,8 @@ const Login = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Login failed");
 
-      // ✅ Save token
+      // Save token permanently until logout
       localStorage.setItem("token", data.token);
-
-      // ✅ Retrieve token immediately
-      const storedToken = localStorage.getItem("token");
-      console.log("Retrieved token:", storedToken);
-
-      // ✅ Decode token (check expiry, vendorId, etc.)
-      try {
-        const decoded = jwtDecode(storedToken);
-        console.log("Decoded token:", decoded);
-
-        // Check expiry (exp is in seconds, JS Date.now is ms)
-        if (decoded.exp * 1000 < Date.now()) {
-          alert("⚠️ Your session has expired. Please log in again.");
-          localStorage.removeItem("token");
-          navigate("/login");
-          return;
-        }
-      } catch (decodeError) {
-        console.error("Token decoding failed:", decodeError);
-      }
 
       alert("Login successful ✅");
       navigate("/");
@@ -80,9 +58,7 @@ const Login = () => {
           type="email"
           placeholder="Email"
           value={loginData.email}
-          onChange={(e) =>
-            setLoginData({ ...loginData, email: e.target.value })
-          }
+          onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
           required
           style={{
             marginBottom: "15px",
@@ -97,9 +73,7 @@ const Login = () => {
           type="password"
           placeholder="Password"
           value={loginData.password}
-          onChange={(e) =>
-            setLoginData({ ...loginData, password: e.target.value })
-          }
+          onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
           required
           style={{
             marginBottom: "20px",
@@ -123,12 +97,8 @@ const Login = () => {
             fontWeight: "bold",
             transition: "0.3s",
           }}
-          onMouseOver={(e) =>
-            (e.target.style.backgroundColor = "#ee661dff")
-          }
-          onMouseOut={(e) =>
-            (e.target.style.backgroundColor = "#b98d7aff")
-          }
+          onMouseOver={(e) => (e.target.style.backgroundColor = "#ee661dff")}
+          onMouseOut={(e) => (e.target.style.backgroundColor = "#ba776bff")}
         >
           Login
         </button>

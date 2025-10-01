@@ -5,15 +5,12 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 const TopBar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [role, setRole] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const storedRole = localStorage.getItem("role");
     setIsLoggedIn(!!token);
-    setRole(storedRole);
   }, []);
 
   const handleLogout = () => {
@@ -21,7 +18,6 @@ const TopBar = () => {
       localStorage.removeItem("token");
       localStorage.removeItem("role");
       setIsLoggedIn(false);
-      setRole(null);
       navigate("/");
     }
   };
@@ -31,57 +27,80 @@ const TopBar = () => {
   };
 
   const executeSearch = () => {
+    if (!searchQuery.trim()) return;
     localStorage.setItem("searchQuery", searchQuery);
-    navigate("/"); // Or any route you want to trigger search
+    navigate("/"); // route to search results/home
   };
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
-      <div className="container">
-        <Link className="navbar-brand" to="/">SUBY</Link>
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <div className="container-fluid">
+        {/* Left side: Brand */}
+        <Link className="navbar-brand fw-bold text-primary" to="/">
+          SUBY
+        </Link>
+
+        {/* Toggler for mobile */}
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNavDropdown"
+          aria-controls="navbarNavDropdown"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        <div className="collapse navbar-collapse" id="navbarNav">
-          {/* Search input with button */}
-          <form className="d-flex ms-auto me-3">
-            <div className="input-group">
-              <input
-                type="search"
-                className="form-control"
-                placeholder="Search firm..."
-                value={searchQuery}
-                onChange={handleSearch}
-                aria-label="Search"
-              />
-              <button
-                className="btn btn-outline-secondary"
-                type="button"
-                onClick={executeSearch}
+        {/* Collapsible Menu */}
+        <div className="collapse navbar-collapse" id="navbarNavDropdown">
+          <div className="row w-100">
+            {/* Middle: Search Bar */}
+            <div className="col-lg-6 mx-auto my-2 my-lg-0">
+              <form
+                className="d-flex"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  executeSearch();
+                }}
               >
-                🔍
-              </button>
+                <div className="input-group">
+                  <input
+                    type="search"
+                    className="form-control"
+                    placeholder="Search firm..."
+                    value={searchQuery}
+                    onChange={handleSearch}
+                  />
+                  <button className="btn btn-outline-primary" type="submit">
+                    🔍
+                  </button>
+                </div>
+              </form>
             </div>
-          </form>
 
-          {/* Auth Buttons */}
-          <ul className="navbar-nav">
-            {!isLoggedIn ? (
-              <>
-                <li className="nav-item me-2">
-                  <Link className="btn btn-outline-primary" to="/login">Login</Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="btn btn-primary" to="/register">Sign Up</Link>
-                </li>
-              </>
-            ) : (
-              <li className="nav-item">
-                <button className="btn btn-danger" onClick={handleLogout}>Logout</button>
-              </li>
-            )}
-          </ul>
+            {/* Right Side: Auth / Logout */}
+            <div className="col-lg-3 d-flex justify-content-end align-items-center">
+              {!isLoggedIn ? (
+                <>
+                  <Link className="btn btn-outline-primary me-2" to="/login">
+                    Login
+                  </Link>
+                  <Link className="btn btn-primary" to="/register">
+                    Sign Up
+                  </Link>
+                </>
+              ) : (
+                <button
+                  className="btn btn-danger"
+                  onClick={handleLogout}
+                >
+                   Logout
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </nav>
