@@ -14,7 +14,7 @@ const ProductMenu = () => {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch(`${API_URL}product/byfirm/${firmId}`);
+      const res = await fetch(`${API_URL}/product/byfirm/${firmId}`);
       if (!res.ok) throw new Error("Failed to fetch products");
       const data = await res.json();
       setProducts(data.products || []);
@@ -43,7 +43,7 @@ const ProductMenu = () => {
     if (!confirmDelete) return;
 
     try {
-      const res = await fetch(`${API_URL}product/delete/${productId}`, {
+      const res = await fetch(`${API_URL}/product/delete/${productId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -105,7 +105,7 @@ const ProductMenu = () => {
                 <img
                   src={
                     product.image
-                      ? `${API_URL}uploads/${product.image}`
+                      ? `${API_URL}/uploads/${product.image}`
                       : "/images/no-image.png"
                   }
                   className="card-img-top"

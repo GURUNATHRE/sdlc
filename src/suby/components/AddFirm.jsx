@@ -33,7 +33,7 @@ const AddFirm = () => {
     if (image) formData.append("image", image);
 
     try {
-      const response = await fetch(`${API_URL}firm/add-firm`, {
+      const response = await fetch(`${API_URL}/firm/add-firm`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`, // ✅ matches verifyToken middleware

@@ -33,7 +33,7 @@ const AddProduct = () => {
 // product/add/68da2d9c44c83f90d59267e3
     try {
       setLoading(true);
-      const res = await fetch(`${API_URL}product/add/${firmId}`, {
+      const res = await fetch(`${API_URL}/product/add/${firmId}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

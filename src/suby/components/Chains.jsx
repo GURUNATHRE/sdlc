@@ -12,7 +12,7 @@ const Chains = () => {
 
   const fetchAllFirms = async () => {
     try {
-      const response = await fetch(`${API_URL}vendor/allvendors`);
+      const response = await fetch(`${API_URL}/vendor/allvendors`);
       if (!response.ok) throw new Error("Network response not ok");
 
       const data = await response.json();
@@ -78,7 +78,7 @@ const Chains = () => {
               <img
                 src={
                   item.image
-                    ? `${API_URL}uploads/${item.image}`
+                    ? `${API_URL}/uploads/${item.image}`
                     : "../"
                 }
                 alt={item.firmName}

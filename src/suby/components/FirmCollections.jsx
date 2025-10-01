@@ -18,7 +18,7 @@ const FirmCollections = () => {
   // Fetch all firms
   const firmDataHandler = async () => {
     try {
-      const response = await fetch(`${API_URL}vendor/allvendors`);
+      const response = await fetch(`${API_URL}/vendor/allvendors`);
       if (!response.ok) throw new Error("Failed to fetch firm data");
       const data = await response.json();
       const allFirms = data.vendors.flatMap((vendor) => vendor.firm || []);
